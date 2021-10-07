@@ -1,0 +1,9 @@
+# VSCode
+.vscode/
+
+# Rust
+target/
+
+# C#
+bin/
+obj/
