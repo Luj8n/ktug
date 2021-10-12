@@ -18,6 +18,7 @@ coord coord_init(int x, int y) {
     coord c;
     c.x = x;
     c.y = y;
+    int popped;
     return c;
 }
 
@@ -39,21 +40,11 @@ void queue_append(queue *q, coord val) {
 }
 
 coord queue_pop(queue *q) {
-    if (q->length == 0) {
+    if (q->popped == q->length) {
         printf("causing some undefined behaviour\n");
         fflush(stdout);
     }
-    coord *c;
-    if (q->popped++ == 100) {
-        q->popped = 1;
-        q->allocated -= 100;
-        c = malloc(q->allocated * sizeof(coord));
-        memcpy(c, q->data + 100, q->length * sizeof(coord));
-        free(q->data);
-        q->data = c;
-        return q->data[0];
-    }
-    return q->data[q->popped];
+    return q->data[q->popped++];
 }
 
 
@@ -93,9 +84,16 @@ int main() {
     }
     memset(map, 0, sizeof(map));
     output = find(board, map, startx, starty, 'K');
+    if (output == -1) {
+        printf("no path found\n");
+        return 0;
+    }
     mark_path(board, map, nums, endx, endy, 0);
     set_to(map, output);
-    find(board, map, endx, endy, 'Z');
+    if (find(board, map, endx, endy, 'Z') == -1) {
+        printf("no path found\n");
+        return 0;
+    }
     mark_path(board, map, nums, startx, starty, output);
     printf("  ");
     for (int i = 0; i < 8; i++) {
@@ -115,6 +113,7 @@ int main() {
         }
         printf("\n");
     }
+    return 0;
 }
 
 int find(char board[8][8], int map[8][8], int startx, int starty, char target) {
@@ -122,14 +121,16 @@ int find(char board[8][8], int map[8][8], int startx, int starty, char target) {
     coord c = coord_init(startx, starty);
     queue q = queue_init();
     memset(queued, 0, sizeof(queued));
-    do {
+    while (1) {
         if (find_helper(board, map, &q, queued, c.x, c.y, target)) {
             free(q.data);
             return map[c.x][c.y];
         }
+        if (q.popped == q.length) {
+            return -1;
+        }
         c = queue_pop(&q);
-    } while (q.length > 0);
-    return -1;
+    }
 }
 
 
@@ -151,7 +152,7 @@ int find_helper(char board[8][8], int map[8][8], queue *q, char queued[8][8], in
         starty - 1,
         starty + 1,
         starty - 1,
-        starty + 2,
+        starty + 1,
         starty - 2,
         starty + 2,
         starty - 2,
@@ -171,7 +172,7 @@ int find_helper(char board[8][8], int map[8][8], queue *q, char queued[8][8], in
 }
 
 void mark_path(char board[8][8], int map[8][8], int nums[8][8], int startx, int starty, int target) {
-    if (map[startx][starty] == target + 1) {
+    if (map[startx][starty] - 1 == target) {
         return;
     }
     int xvals[8] = {
@@ -188,7 +189,7 @@ void mark_path(char board[8][8], int map[8][8], int nums[8][8], int startx, int 
         starty - 1,
         starty + 1,
         starty - 1,
-        starty + 2,
+        starty + 1,
         starty - 2,
         starty + 2,
         starty - 2,
@@ -198,7 +199,7 @@ void mark_path(char board[8][8], int map[8][8], int nums[8][8], int startx, int 
         if (xvals[i] < 0 || xvals[i] >= 8 || yvals[i] < 0 || yvals[i] >= 8) {
             continue;
         }
-        if (map[xvals[i]][yvals[i]] + 1 == map[startx][starty]) {
+        if (map[xvals[i]][yvals[i]] == map[startx][starty] - 1) {
             board[xvals[i]][yvals[i]] = 'c';
             nums[xvals[i]][yvals[i]] = map[xvals[i]][yvals[i]];
             mark_path(board, map, nums, xvals[i], yvals[i], target);
