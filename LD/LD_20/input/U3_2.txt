@@ -1,0 +1,11 @@
+9
+Utena
+Vilnius Kaunas 9
+Panevėžys Šiauliai 9
+Utena Vilnius 9
+Klaipėda Kaunas 9
+Marijampolė Alytus 9
+Telšiai Šiauliai 9
+Kaunas Alytus 9
+Klaipėda Telšiai 9
+Kaunas Panevėžys 9

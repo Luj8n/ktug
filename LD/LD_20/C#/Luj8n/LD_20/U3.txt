@@ -1,0 +1,11 @@
+9
+Utena
+Vilnius Kaunas 102
+Panevėžys Šiauliai 83
+Utena Vilnius 95
+Klaipėda Kaunas 212
+Marijampolė Alytus 60
+Telšiai Šiauliai 72
+Kaunas Alytus 69
+Klaipėda Telšiai 87
+Kaunas Panevėžys 109
